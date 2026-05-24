@@ -99,9 +99,6 @@ def main():
     html = clean_list(find_html(text))
     hashtags = clean_list(find_hashtags(text))
 
-    # Keep only valid cards
-    cards = [c for c in cards if is_valid_card(c)]
-
     # Sort ALU emails before masking
     alu = classify_alu(emails)
 
@@ -122,16 +119,6 @@ def main():
 
     total = len(emails) + len(urls) + len(cards) + len(html) + len(hashtags)
     print(f"\nGRAND TOTAL: {total}")
-
-    # Save to JSON
-    results = {
-        "emails": emails,
-        "urls": urls,
-        "cards": cards,
-        "html_tags": html,
-        "hashtags": hashtags,
-        "alu_emails": alu
-    }
     
 main()
 
