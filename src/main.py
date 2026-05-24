@@ -1,72 +1,138 @@
-import re, json, os
+import re
+import json
+import os
+# open the file and read the text
+def read_file():
+    path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "input", "raw-text.txt"))
+    return open(path, "r", encoding="utf-8").read()
 
-# Read the raw text file 
-in_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "input", "raw-text.txt"))
-text = open(in_path, "r", encoding="utf-8").read()
+# emails
+def find_emails(text):
+    return re.findall(r"[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}", text)
 
-# Regex patterns for each type of data
-PATTERNS = {
-    "emails":    r"[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}",
-    "urls":      r"https?://[A-Za-z0-9.\-/?=&_:]+",
-    "cards":     r"\d{4}[\s\-]?\d{4}[\s\-]?\d{4}[\s\-]?\d{4}",
-    "times":     r"\d{1,2}:\d{2}(?::\d{2})?(?:\s?[AaPp][Mm])?",
-    "html_tags": r"<[^>]+>",
-    "hashtags":  r"#\w+"
-}
+# urls
+def find_urls(text):
+    return re.findall(r"https?://[A-Za-z0-9.\-/?=&_:]+", text)
 
-BAD_WORDS = ["<script", "javascript:", "onclick", "onload", "drop table"]
+# cards
+def find_cards(text):
+    return re.findall(r"\d{4}[\s\-]?\d{4}[\s\-]?\d{4}[\s\-]?\d{4}", text)
+#html tags
+def find_html(text):
+    return re.findall(r"<[^>]+>", text)
 
-#  algorithm to validate credit cards
+# hashtags
+def find_hashtags(text):
+    return re.findall(r"#\w+", text)
+
+
+# Check if a value is safe
+def is_safe(value):
+    bad = ["<script", "javascript:", "onclick", "onload", "drop table"]
+    for word in bad:
+        if word in value.lower():
+            return False
+    return True
+
+
+# validate credit card numbers
 def is_valid_card(card):
     digits = re.sub(r"\D", "", card)
-    if len(digits) not in range(13, 20): return False
+    if len(digits) not in range(13, 20):
+        return False
     total = 0
     for i, n in enumerate(digits[::-1]):
-        n = int(n) * (2 if i % 2 == 1 else 1)
-        total = total + (n - 9 if n in range(10, 19) else n)
+        n = int(n)
+        if i % 2 == 1:
+            n = n * 2
+            if n in range(10, 19):
+                n = n - 9
+        total = total + n
     return total % 10 == 0
 
 # Hide most of an email
-def mask_email(e):
-    name, _, domain = e.partition("@")
-    if len(name) in range(0, 3): return ("*" * len(name)) + "@" + domain
+def mask_email(email):
+    name, _, domain = email.partition("@")
+    if len(name) in range(0, 3):
+        return ("*" * len(name)) + "@" + domain
     return name[0] + ("*" * (len(name) - 2)) + name[-1] + "@" + domain
 
-# Hide a card (show only last 4)
-def mask_card(c):
-    d = re.sub(r"\D", "", c)
-    return ("*" * (len(d) - 4)) + d[-4:]
+# Hide a credit card (show only last 4)
+def mask_card(card):
+    digits = re.sub(r"\D", "", card)
+    return ("*" * (len(digits) - 4)) + digits[-4:]
 
-# Find all matches, remove duplicates and other unsafe items
-results = {}
-for name, pattern in PATTERNS.items():
+# Remove duplicates and unsafe items from a list
+def clean_list(items):
     clean = []
-    for m in re.findall(pattern, text):
-        m = m.strip()
-        if any(w in m.lower() for w in BAD_WORDS) or m in clean: continue
-        if name == "cards" and not is_valid_card(m): continue
-        clean.append(m)
-    results[name] = clean
+    for item in items:
+        if is_safe(item) and item not in clean:
+            clean.append(item)
+    return clean
 
-# Sort ALU emails by domain (before masking, so we still see the domain)
-alu = {"official": [], "alumni": [], "si": []}
-for e in results["emails"]:
-    if e.lower().endswith("@alueducation.com"):        alu["official"].append(mask_email(e))
-    elif e.lower().endswith("@alumni.alueducation.com"): alu["alumni"].append(mask_email(e))
-    elif e.lower().endswith("@si.alueducation.com"):     alu["si"].append(mask_email(e))
+# Sort ALU emails into three groups by domain
+def classify_alu(emails):
+    alu = {"official": [], "alumni": [], "si": []}
+    for e in emails:
+        if e.lower().endswith("@alueducation.com"):
+            alu["official"].append(mask_email(e))
+        elif e.lower().endswith("@alumni.alueducation.com"):
+            alu["alumni"].append(mask_email(e))
+        elif e.lower().endswith("@si.alueducation.com"):
+            alu["si"].append(mask_email(e))
+    return alu
 
-# Mask sensitive data
-results["emails"] = [mask_email(e) for e in results["emails"]]
-results["cards"] = [mask_card(c) for c in results["cards"]]
-
-# Print everything
-for name, items in results.items():
+# Print a list of results with a header
+def show(name, items):
     print(f"\n===== {name.upper()} ({len(items)}) =====")
-    for item in items: print(" ", item)
-print("\n===== ALU EMAILS =====")
-for group, items in alu.items(): print(f"  {group}: {items}")
-print(f"\nGRAND TOTAL: {sum(len(v) for v in results.values())}")
+    for item in items:
+        print(" ", item)
 
-# Save to JSON
-results["alu_emails"] = alu
-print("\n check the sample file to see results in JSON...")
+# Main program
+def main():
+    text = read_file()
+
+    # Find everything
+    emails = clean_list(find_emails(text))
+    urls = clean_list(find_urls(text))
+    cards = clean_list(find_cards(text))
+    html = clean_list(find_html(text))
+    hashtags = clean_list(find_hashtags(text))
+
+    # Keep only valid cards
+    cards = [c for c in cards if is_valid_card(c)]
+
+    # Sort ALU emails before masking
+    alu = classify_alu(emails)
+
+    # Mask sensitive data
+    emails = [mask_email(e) for e in emails]
+    cards = [mask_card(c) for c in cards]
+
+    # Print results
+    show("emails", emails)
+    show("urls", urls)
+    show("cards", cards)
+    show("html_tags", html)
+    show("hashtags", hashtags)
+
+    print("\n===== ALU EMAILS =====")
+    for group, items in alu.items():
+        print(f"  {group}: {items}")
+
+    total = len(emails) + len(urls) + len(cards) + len(html) + len(hashtags)
+    print(f"\nGRAND TOTAL: {total}")
+
+    # Save to JSON
+    results = {
+        "emails": emails,
+        "urls": urls,
+        "cards": cards,
+        "html_tags": html,
+        "hashtags": hashtags,
+        "alu_emails": alu
+    }
+    
+main()
+
+print("CHECK THE UOTPUT SAMPLE IN OUTPUT/JSON")
