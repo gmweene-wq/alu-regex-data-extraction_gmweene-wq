@@ -1,0 +1,90 @@
+{
+  "emails": [
+    "a*********e@alueducation.com",
+    "f*************m@alueducation.com",
+    "j*******a@alumni.alueducation.com",
+    "n*****y@si.alueducation.com",
+    "s********t@si.alueducation.com",
+    "g************6@gmail.com",
+    "k******h@alueducation.com",
+    "f*********s@alueducation.com",
+    "s******y@alueducation.com"
+  ],
+  "urls": [
+    "https://docs.alueducation.com/incidents/2026/04/wifi-pav3",
+    "http://status.alueducation.com.",
+    "https://portal.si.alueducation.com/stipends?ref=apr2026",
+    "https://www.alueducation.com/apply",
+    "https://drive.alueducation.com/folder/abc-123_xyz",
+    "https://meet.alueducation.com/rec?id=99a8&t=00:14:22",
+    "http://www.alueducation"
+  ],
+  "cards": [
+    "************4242",
+    "************0004"
+  ],
+  "times": [
+    "09:14:22",
+    "03:42 PM",
+    "14:05",
+    "4:30 PM",
+    "09:07 AM",
+    "11:30 AM",
+    "11:28:45",
+    "23:59",
+    "08:15 AM",
+    "00:14:22",
+    "23:47",
+    "1:05 AM"
+  ],
+  "html_tags": [
+    "<aline.uwase@alueducation.com>",
+    "<griphenmweene6@gmail.com>",
+    "<div class=\"error-banner\">",
+    "<p>",
+    "</p>",
+    "<a href=\"/help\">",
+    "</a>",
+    "<img src=\"/img/warn.png\" alt=\"warning\"/>",
+    "</div>",
+    "<admin@@alueducation..com>",
+    "</script>",
+    "<k.mensah@alueducation.com>",
+    "<iframe src=\"http://www.alueducation>",
+    "</iframe>"
+  ],
+  "hashtags": [
+    "#48201",
+    "#WiFi",
+    "#Pavilion3",
+    "#Infrastructure",
+    "#post",
+    "#48202",
+    "#48203",
+    "#48204",
+    "#48205",
+    "#reimbursement",
+    "#travel",
+    "#Q2",
+    "#48206",
+    "#ALUproud",
+    "#Kigali2026",
+    "#classof2026"
+  ],
+  "alu_emails": {
+    "official": [
+      "a*********e@alueducation.com",
+      "f*************m@alueducation.com",
+      "k******h@alueducation.com",
+      "f*********s@alueducation.com",
+      "s******y@alueducation.com"
+    ],
+    "alumni": [
+      "j*******a@alumni.alueducation.com"
+    ],
+    "si": [
+      "n*****y@si.alueducation.com",
+      "s********t@si.alueducation.com"
+    ]
+  }
+}
