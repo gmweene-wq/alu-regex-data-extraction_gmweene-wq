@@ -82,12 +82,16 @@ def classify_alu(emails):
             alu["si"].append(mask_email(e))
     return alu
 
-# Print a list of results with a header
+# Print a list of results
 def show(name, items):
     print(f"\n===== {name.upper()} ({len(items)}) =====")
     for item in items:
         print(" ", item)
-
+def save_results(results):
+    path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "output", "sample-output.json"))
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    json.dump(results, open(path, "w", encoding="utf-8"), indent=2, ensure_ascii=False)
+    print(f"\nSaved to: {path}")
 # Main program
 def main():
     text = read_file()
